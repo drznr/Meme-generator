@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body onload="onInit()">
+    <header class="header flex space-between align-center">
+        <a href="/"><img src="images/LOGO.png" alt="logo" class="logo"></a>
+        <ul class="nav flex space-between align-center">
+            <li><a href="#gallery" class="nav-link">Gallery</a></li>
+            <li><a href="#memes" class="nav-link">Memes</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+        </ul>
+    </header>
+
+
+    <section class="container main-contaner">
+        <header class="gallery-header flex space-between align-center">
+            <input type="text" class="search" placeholder="Search" list="keywords">
+            <datalist id="keywords"></datalist>
+            <div class="flex space-evenly align-center keys-container">
+                <div class="keys"></div>
+                <button>More</button>
+            </div>
+        </header>
+        <main class="gallery main-grid"></main>
+    </section>
+
+    <section class="modal-container container flex space-evenly">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="canvas-container">
+            <canvas id="memeCanvas"></canvas>
+        </div>
+        <div class="controls-panel flex">
+            <input type="text" class="txt" placeholder="Your text here..." onkeyup="onTxtChange(this.value)" />
+            <div class="controls flex justify-center align-center">
+                <span class="icon move" onclick="onLineMove(-2)" title="Move up">&uarr;</span>
+                <span class="icon move" onclick="onLineMove(2)" title="Move down">&darr;</span>
+                <span class="icon switch" onclick="onLineFocus()" title="Switch line">&udarr;</span>
+                <span class="icon plus" onclick="onLineAdded()" title="Add line">&plus;</span>
+                <span class="icon trash"  onclick="onLineRemoved()" title="Remove line">&#128465;</span>
+            </div>
+            <div class="txt-controls flex justify-center">
+                <span class="icon txt-control" data-name="size" data-value="2" onclick="onTxtEdit(this)">A+</span>
+                <span class="icon txt-control" data-name="size" data-value="-2" onclick="onTxtEdit(this)">A-</span>
+                <span class="icon txt-control" data-name="align" data-value="right" onclick="onTxtEdit(this)"><img src="images/txt-left.png"></span>
+                <span class="icon txt-control" data-name="align" data-value="center" onclick="onTxtEdit(this)"><img src="images/txt-center.png"></span>
+                <span class="icon txt-control" data-name="align" data-value="left" onclick="onTxtEdit(this)"><img src="images/txt-right.png"></span>
+            </div>
+            <div class="txt-controls flex justify-center">
+                <select class="icon" data-name="font" onchange="onTxtEdit(this)">
+                    <option value="Impact, sans-serif">Impact</option>
+                    <option value="Ariel, sans-serif">Ariel</option>
+                </select>
+                <input type="color" data-name="stroke" id="strokeColorInp" onchange="onTxtEdit(this)">
+                <label class="icon txt-control stroke" for="strokeColorInp">S</label>
+                <input type="color" data-name="color" id="colorInp" onchange="onTxtEdit(this)">
+                <label for="colorInp" class="icon txt-control"><img src="images/color.png"></label>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/utils.js"></script>
+    <script src="js/services/memes-service.js"></script>
+    <script src="js/controlers/canvas-controler.js"></script>
+    <script src="js/controlers/gallery-controler.js"></script>
+</body>
+
+</html>
