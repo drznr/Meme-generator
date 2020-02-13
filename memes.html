@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemeGen</title>
+    <link rel="stylesheet" href="css/memes.css">
+</head>
+<body onload="OnInit()">
+    <header class="header flex space-between align-center">
+        <a href="/"><img src="images/LOGO.png" alt="logo" class="logo"></a>
+        <ul class="nav flex space-between align-center">
+            <li><a href="/index.html" data-page="index" class="nav-link">Gallery</a></li>
+            <li><a href="/memes.html" data-page="memes" class="nav-link">Memes</a></li>
+            <li><a href="#about" data-page="about" class="nav-link">About</a></li>
+        </ul>
+        <span class="mobile-menu" onclick="toggleMenu()">|</span>
+    </header>
+
+    <main class="main-container">
+
+    </main>
+
+    <script src="js/utils.js"></script>
+    <script src="js/services/memes-service.js"></script>
+    <script src="js/controlers/canvas-controler.js"></script>
+    <script src="js/controlers/memes-controler.js"></script>
+</body>
+</html>

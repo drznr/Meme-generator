@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MemeGen</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -12,26 +12,27 @@
     <header class="header flex space-between align-center">
         <a href="/"><img src="images/LOGO.png" alt="logo" class="logo"></a>
         <ul class="nav flex space-between align-center">
-            <li><a href="#gallery" class="nav-link">Gallery</a></li>
-            <li><a href="#memes" class="nav-link">Memes</a></li>
-            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="/index.html" data-page="index" class="nav-link">Gallery</a></li>
+            <li><a href="/memes.html" data-page="memes" class="nav-link">Memes</a></li>
+            <li><a href="#about" data-page="about" class="nav-link">About</a></li>
         </ul>
+        <span class="mobile-menu" onclick="toggleMenu()">|</span>
     </header>
 
 
-    <section class="container main-contaner">
+    <section class="container main-container">
         <header class="gallery-header flex space-between align-center">
-            <input type="text" class="search" placeholder="Search" list="keywords">
+            <input type="text" class="search" placeholder="Search" list="keywords" onchange="onFilterChange('', this.value)">
             <datalist id="keywords"></datalist>
             <div class="flex space-evenly align-center keys-container">
                 <div class="keys"></div>
-                <button>More</button>
+                <button onclick="onKeysAdd(1)">More</button>
             </div>
         </header>
         <main class="gallery main-grid"></main>
     </section>
 
-    <section class="modal-container container flex space-evenly">
+    <section class="modal-container container flex space-evenly align-center">
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <div class="canvas-container">
             <canvas id="memeCanvas"></canvas>
@@ -48,9 +49,9 @@
             <div class="txt-controls flex justify-center">
                 <span class="icon txt-control" data-name="size" data-value="2" onclick="onTxtEdit(this)">A+</span>
                 <span class="icon txt-control" data-name="size" data-value="-2" onclick="onTxtEdit(this)">A-</span>
-                <span class="icon txt-control" data-name="align" data-value="right" onclick="onTxtEdit(this)"><img src="images/txt-left.png"></span>
+                <span class="icon txt-control" data-name="align" data-value="left" onclick="onTxtEdit(this)"><img src="images/txt-left.png"></span>
                 <span class="icon txt-control" data-name="align" data-value="center" onclick="onTxtEdit(this)"><img src="images/txt-center.png"></span>
-                <span class="icon txt-control" data-name="align" data-value="left" onclick="onTxtEdit(this)"><img src="images/txt-right.png"></span>
+                <span class="icon txt-control" data-name="align" data-value="right" onclick="onTxtEdit(this)"><img src="images/txt-right.png"></span>
             </div>
             <div class="txt-controls flex justify-center">
                 <select class="icon" data-name="font" onchange="onTxtEdit(this)">
@@ -62,8 +63,26 @@
                 <input type="color" data-name="color" id="colorInp" onchange="onTxtEdit(this)">
                 <label for="colorInp" class="icon txt-control"><img src="images/color.png"></label>
             </div>
+            <div class="emojis-container">
+                <span onclick="onEmojiAdded(this)">🤣</span><span onclick="onEmojiAdded(this)">😂</span><span onclick="onEmojiAdded(this)">🤩</span><span onclick="onEmojiAdded(this)">🤑</span><span onclick="onEmojiAdded(this)">😷</span>
+                <span onclick="onEmojiAdded(this)">🤠</span><span onclick="onEmojiAdded(this)">👿</span><span onclick="onEmojiAdded(this)">💩</span><span onclick="onEmojiAdded(this)">👽</span><span onclick="onEmojiAdded(this)">✌</span>
+            </div>
+            <div class="file-controls flex space-evenly">
+                <button class="btn-file save" onclick="onCanvasSave()"><img class="save-icon" src="images/save.png">&nbsp;Save</button>
+                <button class="btn-file download" onclick="onImageSaved()"><img src="images/download.png">&nbsp;Download</button>
+                <form action="" method="POST" enctype="multipart/form-data" onsubmit="onImageShared(this, event)">
+                    <input name="img" id="imgData" type="hidden" />
+                    <button class="btn-file share" type="submit"><img src="images/share.png">&nbsp;Share</button>
+                </form>
+            </div>
         </div>
     </section>
+
+    <aside class="popup">
+        <span onclick="hidePopup()">&times;</span>
+        <h3>Meme saved successfully!</h3>
+        <p>You can check out your saved memes in the Memes page.</p>
+    </aside>
 
     <script src="js/utils.js"></script>
     <script src="js/services/memes-service.js"></script>
