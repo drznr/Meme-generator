@@ -9,12 +9,31 @@ function onInit() {
     _populateGallery();
     initCanvas();
     handleDragEvents();
-    //setKeyEvent()
+    handleKeyEvent();
     showCurrPage();
 }
 
 
 
+function onFileUploaded(ev) {
+    let files = ev.target.files;
+    for (let i = 0; i < files.length; i++) {
+        let img = new Image();
+        img.src = files[i];
+        img.src = URL.createObjectURL(files[i]);
+        let imgData = _createImg(img.src);
+        addNewImage(imgData);
+        _populateGallery();
+    }
+}
+function onSetLang(lang) {
+    setLang(lang);
+
+    if (lang === 'he') document.body.classList.add('rtl');
+    else document.body.classList.remove('rtl');
+
+    doTrans();
+}
 function showCurrPage() {
     let elLinks = document.querySelectorAll('.nav-link');
     elLinks.forEach(elLink => {
@@ -28,12 +47,8 @@ function toggleMenu() {
 function onFilterChange(elKey, filterBy) {
     let keywordsMap = getAllKeywords();
     if (typeof elKey === 'object') {
-        let diff = keywordsMap[elKey.innerText];
-        diff++;
-        if (!elKey.style.fontSize) elKey.style.fontSize = (16 + diff) + 'px';
-        else {
-            elKey.style.fontSize = (+elKey.style.fontSize.split('px')[0] + diff) + 'px';
-        }
+        keywordsMap[filterBy]++;
+        _setKeywords();
     }
     setFilter(filterBy);
     _populateGallery();
@@ -65,11 +80,12 @@ function _setKeywords() {
     const elKeysContainer = document.querySelector('.keys');
     let strHTML = '';
 
-    var newKeys = getKeywords();
+    let newKeys = getKeywords();
+    let objMap = getAllKeywords();
     if (!gKeys.includes(...newKeys)) gKeys = [...gKeys, ...newKeys];
 
-    gKeys.forEach(key => {
-        strHTML += `<span class="keyword" onclick="onFilterChange(this, '${key}')">${key}</span>`;
+    gKeys.forEach((key, idx) => {
+        strHTML += `<span class="keyword" data-trans="key${idx + 1}" style="font-size:${16 + objMap[key]}px;" onclick="onFilterChange(this, '${key}')">${key}</span>`;
     });
     strHTML += '\n';
     elKeysContainer.innerHTML = strHTML;
@@ -79,8 +95,8 @@ function _setAutoComp() {
     const elAutoComplete = document.querySelector('#keywords');
 
     let keys = getAllKeywords();
-    Object.keys(keys).forEach(key => {
-        autoCompHTML += `<option value="${key}" />`;
+    Object.keys(keys).forEach((key, idx) => {
+        autoCompHTML += `<option data-trans="key${idx + 1}" value="${key}" />`;
     });
     elAutoComplete.innerHTML = autoCompHTML;
 }

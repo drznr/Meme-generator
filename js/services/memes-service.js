@@ -11,37 +11,22 @@ var gKeywords = {
     'funny': 2,
     'comic': 1,
     'smile': 1,
-    'kids': 2
+    'kids': 2,
+    'animals': 2
 };
 var gImgs = _createImgs();
 var gMeme = {
     selectedImgId: '',
     selectedLineIdx: 0,
     selectedEmojiIdx: 0,
-    lines: [
-        {
-            txt: 'YOUR TEXT HERE...',
-            size: 20,
-            font: 'Impact, sans-serif',
-            align: 'left',
-            color: '#000000',
-            stroke: '#000000',
-            offsetY: 10,
-            offsetX: 10
-        }
-    ],
+    lines: [],
     emojis: []
 }
 var gFilter = '';
 
 
 
-function resetEmojiFocus() {
-    gMeme.selectedEmojiIdx = 0;
-}
-function resetLineFocus() {
-    gMeme.selectedLineIdx = 0;
-}
+
 function unToggleEmoji() {
     gMeme.selectedEmojiIdx = -1;
 }
@@ -52,8 +37,8 @@ function addEmoji(elSpan) {
     let newEmoji = {
         content: elSpan.innerText,
         size: 50,
-        offsetY: 50,
-        offsetX: 50
+        offsetY: 100,
+        offsetX: 100
     }
     gMeme.emojis.push(newEmoji);
 }
@@ -63,19 +48,19 @@ function doUploadImg(elForm, onSuccess) {
         method: 'POST',
         body: formData
     })
-    .then(function (res) {
-        return res.text()
-    })
-    .then(onSuccess)
-    .catch(function (err) {
-        console.error(err)
-    })
+        .then(function (res) {
+            return res.text()
+        })
+        .then(onSuccess)
+        .catch(function (err) {
+            console.error(err)
+        })
 }
 function saveMeme(memeData) {
-   var memes = getFromLocalStorage(STORAGE_KEY);
-   if (memes) memes.push(memeData);
-   else memes = [memeData];
-   saveToLocalStorage(STORAGE_KEY, memes);
+    var memes = getFromLocalStorage(STORAGE_KEY);
+    if (memes) memes.push(memeData);
+    else memes = [memeData];
+    saveToLocalStorage(STORAGE_KEY, memes);
 }
 function changeKeywords(diff) {
     gCurrKeysRow += diff;
@@ -85,33 +70,35 @@ function changeKeywords(diff) {
     else if (gCurrKeysRow < 1) gCurrKeysRow = lastRow;
 }
 function removeLine() {
-    if (gMeme.lines.length) {
+    if (gMeme.selectedLineIdx >= 0 && gMeme.lines.length) {
         gMeme.lines.splice(gMeme.selectedLineIdx, 1);
         gMeme.selectedLineIdx--;
+        return true;
     }
+    return false;
 }
 function createNewLine(canvasHeight, canvasWidth) {
     let offsetY = (gMeme.lines.length === 0) ? 10 : (gMeme.lines.length === 1) ? (canvasHeight - 20) : (canvasHeight / 2);
-    let offsetX = (gMeme.lines[gMeme.selectedLineIdx].align === 'center') ? (canvasWidth / 2) : (gMeme.lines[gMeme.selectedLineIdx].align === 'left') ? 10 : (canvasWidth - 2);
 
     let newLine = {
         txt: 'YOUR TEXT HERE...',
         size: 20,
         font: 'Impact, sans-serif',
-        align: 'left',
+        align: 'center',
         color: '#000000',
         stroke: '#000000',
         offsetY: (offsetY - 10),
-        offsetX: offsetX
+        offsetX: canvasWidth / 2
     }
     gMeme.lines.push(newLine);
 }
 function moveLine(val) {
     let line = gMeme.lines[gMeme.selectedLineIdx];
     if (line) {
-        if (val < 0 && line.offsetY <= line.offsetY || val > 0 && line.offsetY >= (gCanvas.height - line.size - line.offsetY)) return;
+        if (val < 0 && line.offsetY <= 0 || val > 0 && line.offsetY >= (gCanvas.height - line.size - line.offsetY)) return;
         line.offsetY += val;
-    }
+        return true;
+    } else return false;
 }
 function dragLine(val) {
     if (gMeme.selectedLineIdx < 0) return;
@@ -132,24 +119,33 @@ function dragEmoji(y, x) {
 }
 function setTxtOpts(elem) {
     let line = gMeme.lines[gMeme.selectedLineIdx];
-    switch (elem.dataset.name) {
-        case 'size':
-            line[elem.dataset.name] += (+elem.dataset.value);
-            break;
-        case 'align':
-            if (elem.dataset.value === 'center') line.offsetX = (gCanvas.width / 2);
-            else if (elem.dataset.value === 'left') line.offsetX = 10;
-            else line.offsetX = (gCanvas.width - 10);
-            line[elem.dataset.name] = elem.dataset.value;
-            break;
-        case 'font':
-        case 'color':
-        case 'stroke':
-            line[elem.dataset.name] = elem.value;
-            break;
-        default:
-            break;
+    let emoji = gMeme.emojis[gMeme.selectedEmojiIdx];
+    if (line) {
+        switch (elem.dataset.name) {
+            case 'size':
+                line[elem.dataset.name] += (+elem.dataset.value);
+                break;
+            case 'align':
+                if (elem.dataset.value === 'center') line.offsetX = (gCanvas.width / 2);
+                else if (elem.dataset.value === 'left') line.offsetX = 10;
+                else line.offsetX = (gCanvas.width - 10);
+                line[elem.dataset.name] = elem.dataset.value;
+                break;
+            case 'font':
+            case 'color':
+            case 'stroke':
+                line[elem.dataset.name] = elem.value;
+                break;
+            default:
+                break;
+        }
+        return true;
     }
+    if (emoji && elem.dataset.name === 'size') {
+        emoji[elem.dataset.name] += (+elem.dataset.value);
+        return true;
+    }
+    return false;
 }
 function updateCurrLine() {
     if (gMeme.selectedLineIdx < (gMeme.lines.length - 1)) gMeme.selectedLineIdx++;
@@ -163,11 +159,7 @@ function changeTxt(txt) {
     var currLine = gMeme.lines[gMeme.selectedLineIdx];
     currLine.txt = txt;
 }
-// function typeTxt(letter) {
-//     var currLine = gMeme.lines[gMeme.selectedLineIdx];
-//     if (currLine.txt === '') currLine.txt = letter;
-//     else currLine.txt += letter;
-// }
+
 function setCurrMeme(elImg) {
     gMeme.selectedImgId = elImg.dataset.id;
     gMeme.selectedLineIdx = 0;
@@ -177,11 +169,11 @@ function setCurrMeme(elImg) {
             txt: 'YOUR TEXT HERE...',
             size: 20,
             font: 'Impact, sans-serif',
-            align: 'left',
+            align: 'center',
             color: '#000000',
             stroke: '#000000',
             offsetY: 10,
-            offsetX: 10
+            offsetX: elImg.naturalWidth / 2
         }
     ];
     gMeme.emojis = [];
@@ -218,15 +210,25 @@ function getImgsToDisplay() {
 function getLines() {
     return gMeme.lines;
 }
+function addNewImage(img) {
+    gImgs.unshift(img);
+}
 function _createImgs() {
     const urls = [
         'images/memes/2.jpg', 'images/memes/003.jpg', 'images/memes/004.jpg', 'images/memes/005.jpg',
-        'images/memes/5.jpg', 'images/memes/006.jpg', 'images/memes/8.jpg', 'images/memes/9.jpg'
+        'images/memes/5.jpg', 'images/memes/006.jpg', 'images/memes/8.jpg', 'images/memes/9.jpg', 'images/memes/12.jpg',
+        'images/memes/19.jpg', 'images/memes/Ancient-Aliens.jpg', 'images/memes/drevil.jpg', 'images/memes/img2.jpg',
+        'images/memes/img4.jpg', 'images/memes/img5.jpg', 'images/memes/img6.jpg', 'images/memes/img11.jpg', 'images/memes/img12.jpg',
+        'images/memes/leo.jpg', 'images/memes/meme1.jpg', 'images/memes/One-Does-Not-Simply.jpg', 'images/memes/Oprah-You-Get-A.jpg',
+        'images/memes/patrick.jpg', 'images/memes/putin.jpg', 'images/memes/X-Everywhere.jpg'
     ];
     const keywords = [
-        ['woman', 'smile'], ['man', 'funny', 'comic'], ['animals', 'cute'],
+        ['woman', 'smile'], ['man', 'funny', 'comic', 'celeb'], ['animals', 'cute'],
         ['animals', 'cute', 'kids'], ['comic', 'smile', 'kids'], ['animals', 'cute'],
-        ['man', 'comic', 'smile'], ['kids', 'comic', 'funny']
+        ['man', 'comic', 'smile'], ['kids', 'comic', 'funny'], ['man'],
+        ['man', 'comic'], ['man', 'funny', 'comic'], ['man', 'funny', 'comic', 'celeb'], ['kids', 'funny', 'cute'],
+        ['man', 'funny', 'celeb'], ['kids', 'funny', 'cute'], ['animals', 'funny', 'cute'], ['man', 'comic', 'celeb'], ['man'],
+        ['man', 'celeb'], ['man', 'celeb'], ['man', 'celeb'], ['woman', 'celeb'], ['man', 'comic'], ['man', 'celeb'], ['funny', 'comic']
     ]
     let imgs = []
     for (let i = 0; i < urls.length; i++) {

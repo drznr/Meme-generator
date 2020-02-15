@@ -6,16 +6,6 @@ var gCanvas, gCtx;
 
 
 
-
-
-// function setKeyEvent() {
-//     document.body.addEventListener('keyup', (ev) => {
-//         const elContainer = document.querySelector('.modal-container');
-//         if (elContainer.classList.contains('open') && gMeme.selectedLineIdx >= 0) {
-//             onTxtType(ev.key);
-//         }
-//     });
-// }
 function onEmojiAdded(elSpan) {
     addEmoji(elSpan);
     drawImg();
@@ -58,8 +48,7 @@ function onCanvasSave() {
     }, 0);
 }
 function onLineRemoved() {
-    removeLine();
-    drawImg();
+    if (removeLine()) drawImg();
 }
 function onLineAdded() {
     createNewLine(gCanvas.height, gCanvas.width);
@@ -74,8 +63,7 @@ function onDragEmoji(y, x) {
     drawImg();
 }
 function onLineMove(val) {
-    moveLine(val);
-    drawImg();
+    if (moveLine(val)) drawImg();
 }
 function onLineFocus() {
     var currLine = updateCurrLine();
@@ -86,13 +74,8 @@ function onTxtChange(txt) {
     changeTxt(txt);
     drawImg();
 }
-// function onTxtType(txt) {
-//     typeTxt(txt);
-//     drawImg();
-// }
 function onTxtEdit(elem) {
-    setTxtOpts(elem);
-    drawImg();
+    if (setTxtOpts(elem)) drawImg();
 }
 function drawImg(elImg = document.querySelector(`[data-id="${gMeme.selectedImgId}"]`)) {
     gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
@@ -159,13 +142,26 @@ function setFormValues(line) {
         elColorInp.value = line.color;
     } else {
         elTxtInp.value = '';
-        elTxtInp.placeholder = 'Your text here...';
+        elTxtInp.placeholder = (getCurrLang() === 'en') ? 'Your text here...' : 'כתוב כאן...';
         elFontSelect.value = 'Impact, sans serif';
         elStrokeInp.value = '#000000';
         elColorInp.value = '#000000';
     }
 }
+function handleKeyEvent() {
+    window.addEventListener('keyup', (ev) => {
+        if (!document.querySelector('.modal-container').classList.contains('open')) return;
+        let line = getCurrLine();
+        if (!line) return;
+        
+        if (ev.key === 'Backspace') line.txt = line.txt.substring(0, line.txt.length - 1);
+        else if (ev.key === 'Enter') unToggleLine();
+        else if (ev.key.length === 1) line.txt += ev.key;
+        else return;
 
+        drawImg();
+    });
+}
 function handleDragEvents() {
     gCanvas.addEventListener('touchstart', (ev) => {
         let offsetX = ev.targetTouches[0].pageX;
@@ -174,6 +170,7 @@ function handleDragEvents() {
         onEmojiClicked(offsetX, offsetY);
     });
     gCanvas.addEventListener('touchmove', (ev) => {
+        ev.preventDefault();
         let offsetY = ev.targetTouches[0].pageY;
         let offsetX = ev.targetTouches[0].pageX;
         onDragLine(offsetY);
@@ -187,43 +184,48 @@ function handleDragEvents() {
 
         gCanvas.onmousemove = (ev) => {
             let { offsetX, offsetY } = ev;
+            document.querySelector('#memeCanvas').style.cursor = 'grabbing';
             onDragLine(offsetY);
             onDragEmoji(offsetY, offsetX);
         }
     });
     gCanvas.addEventListener('mouseup', () => {
         gCanvas.onmousemove = null;
-        if (getCurrLine() === undefined) resetLineFocus();
-        if (getCurrEmoji() === undefined) resetEmojiFocus();
+        document.querySelector('#memeCanvas').style.cursor = 'grab';
     });
     gCanvas.addEventListener('mouseleave', () => {
         gCanvas.onmousemove = null;
-        if (getCurrLine() === undefined) resetLineFocus();
-        if (getCurrEmoji() === undefined) resetEmojiFocus();
+        document.querySelector('#memeCanvas').style.cursor = 'grab';
     });
 }
 function onLineClicked(offsetX, offsetY) {
+    let noLineClicked = true;
     let currLines = getLines();
     currLines.forEach((line, idx) => {
         if ((offsetY >= line.offsetY && offsetY <= (line.offsetY + line.size)) && (offsetX >= 10 && offsetX <= (gCanvas.width - 10))) {
+            noLineClicked = false;
             changeCurrLine(idx);
             setFormValues(getCurrLine());
             unToggleEmoji();
             drawImg();
         }
     });
+    if (noLineClicked) cleanHighlightedLine();
 }
 function onEmojiClicked(offsetX, offsetY) {
+    let noEmijiClicked = true;
     let emojis = getEmojis();
     emojis.forEach((emoji, idx) => {
         if ((offsetY >= emoji.offsetY && offsetY <= (emoji.offsetY + emoji.size)) && (offsetX >= emoji.offsetX && offsetX <= (emoji.offsetX + emoji.size))) {
+            noEmijiClicked = false;
             setSelectedEmoji(idx);
             unToggleLine();
         }
     });
+    if (noEmijiClicked) unToggleEmoji();
 }
 function cleanHighlightedLine() {
-    gMeme.selectedLineIdx = -1;
+    unToggleLine();
     drawImg();
 }
 function _resizeCanvas(elImg) {

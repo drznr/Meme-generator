@@ -198,6 +198,27 @@ button:focus {
     width: 100%;
 }
 
+/* Helpers */
+.lang {
+    position: relative;
+    top: 41px;
+    right: 8rem;
+}
+body.rtl .lang {
+    right: unset;
+    left: 8rem;
+}
+.lang [type="radio"] {
+    display: none;
+}
+.lang label:first-of-type {
+    margin-inline-end: 5px;
+}
+.lang label {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /* Media Queries */
 @media only screen and (min-width: 980px) {
     .container {

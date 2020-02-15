@@ -176,17 +176,22 @@ button:focus {
     justify-content: flex-start;
     align-items: stretch;
 }
-.gallery-header>* {
-    flex-basis: 50%;
+.gallery-header [type="file"] {
+    display: none;
+}
+.gallery-header .upload>img {
+    width: 3rem;
 }
 .keys-container {
     flex-direction: row;
+    flex-basis: 50%;
 }
 .main-container {
     border-radius: 10px;
     background-color: #383b42;
 }
 .main-container .search {
+    flex-basis: 50%;
     background-color: #22252c;
     border-radius: 30px;
     opacity: 0.38;
@@ -198,6 +203,9 @@ button:focus {
     background-position: 95%;
     padding-inline-end: 5%;
     margin-block-end: 1rem;
+}
+body.rtl .main-container .search {
+    background-position: 5%;
 }
 .main-container .keys {
     box-shadow: 0 3px 6px 1px rgba(0, 0, 0, .15);
@@ -253,7 +261,7 @@ button:focus {
     transform: scaleY(1);
     opacity: 1;
 }
-.modal-container>* {
+.canvas-container, .controls-panel {
   min-height: 500px;
 }
 .close-modal {
@@ -267,10 +275,11 @@ button:focus {
 #memeCanvas {
     margin-block-start: 3rem;
     border: 2px solid rgba(255, 255, 255, 0.4);
+    cursor: grab;
 }
 .controls-panel {
     border-radius: 30px;
-    max-width: 100%;
+    max-width: 750px;
     background-color: rgba(235, 238, 243, 0.11);
     flex-grow: 1;
     margin: 0;
@@ -337,6 +346,9 @@ button:focus {
 }
 
 /* Helpers */
+.rtl {
+    direction: rtl;
+}
 .icon {
     width: 3.75rem;
     border-radius: 10px;
@@ -416,6 +428,25 @@ select.icon {
     box-shadow: none;
     transform: translateY(5px);
 }
+.lang {
+    position: relative;
+    top: 41px;
+    right: 8rem;
+}
+body.rtl .lang {
+    right: unset;
+    left: 8rem;
+}
+.lang [type="radio"] {
+    display: none;
+}
+.lang label:first-of-type {
+    margin-inline-end: 5px;
+}
+.lang label {
+    text-decoration: underline;
+    cursor: pointer;
+}
 
 /* Media Queries */
 @media only screen and (min-width: 980px) {
@@ -431,14 +462,14 @@ select.icon {
     .modal-container {
       flex-direction: row;
       align-items: stretch;
-      height: 85%;
+      min-height: 85%;
       padding-block-start: 2rem;
       padding-block-end: 0;
       box-shadow: none;
     }
-    .modal-container>* {
+    .canvas-container, .controls-panel {
         min-height: none;
-    }
+      }
     .mobile-menu {
         display: none;
     }
