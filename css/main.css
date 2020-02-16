@@ -109,7 +109,7 @@ button:focus {
     left: 0;
     flex-direction: column;
     background-color: #22252c;
-    border-radius: 100px;    
+    border-radius: 3px;    
     margin-block-start: 3px;
     transform: scaleY(0);
     transform-origin: top;
@@ -181,6 +181,10 @@ button:focus {
 }
 .gallery-header .upload>img {
     width: 3rem;
+    cursor: pointer;
+}
+.gallery.hide {
+    display: none;
 }
 .keys-container {
     flex-direction: row;
@@ -261,7 +265,7 @@ body.rtl .main-container .search {
     transform: scaleY(1);
     opacity: 1;
 }
-.canvas-container, .controls-panel {
+.controls-panel {
   min-height: 500px;
 }
 .close-modal {
@@ -279,7 +283,7 @@ body.rtl .main-container .search {
 }
 .controls-panel {
     border-radius: 30px;
-    max-width: 750px;
+    max-width: 100%;
     background-color: rgba(235, 238, 243, 0.11);
     flex-grow: 1;
     margin: 0;
@@ -296,6 +300,7 @@ body.rtl .main-container .search {
     color: #3d3d3d;
     text-transform: uppercase;
     padding: .75rem 5.25rem;
+    font-size: .5em;
 }
 .controls-panel .txt:focus {
     box-shadow: inset 10px 5px 20px rgba(0, 0, 0, .15);
@@ -356,6 +361,7 @@ body.rtl .main-container .search {
     cursor: pointer;
     text-align: center;
     display: inline-block;
+    user-select: none;
 }
 .icon img {
     height: 1.5rem;
@@ -406,7 +412,8 @@ select.icon {
 }
 .btn-file {
     border-radius: 10px;
-    padding: .75rem .625rem;
+    padding: .25rem .125rem;
+    font-size: .75em;
     cursor: pointer;
     text-align: center;
     display: inline-block;
@@ -494,5 +501,13 @@ body.rtl .lang {
     }
     .controls-panel {
         margin: 0 .5rem;
+        max-width: 750px;
+    }
+    .controls-panel .txt {
+        font-size: 1em;
+    }
+    .btn-file {
+        padding: .75rem .625rem;
+        font-size: inherit;
     }
 }

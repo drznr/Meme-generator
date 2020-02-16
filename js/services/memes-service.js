@@ -85,7 +85,7 @@ function createNewLine(canvasHeight, canvasWidth) {
         size: 20,
         font: 'Impact, sans-serif',
         align: 'center',
-        color: '#000000',
+        color: '#ffffff',
         stroke: '#000000',
         offsetY: (offsetY - 10),
         offsetX: canvasWidth / 2
@@ -164,18 +164,7 @@ function setCurrMeme(elImg) {
     gMeme.selectedImgId = elImg.dataset.id;
     gMeme.selectedLineIdx = 0;
     gMeme.selectedEmojiIdx = 0;
-    gMeme.lines = [
-        {
-            txt: 'YOUR TEXT HERE...',
-            size: 20,
-            font: 'Impact, sans-serif',
-            align: 'center',
-            color: '#000000',
-            stroke: '#000000',
-            offsetY: 10,
-            offsetX: elImg.naturalWidth / 2
-        }
-    ];
+    gMeme.lines = [];
     gMeme.emojis = [];
 }
 function getCurrLine() {

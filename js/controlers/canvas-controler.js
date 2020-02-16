@@ -29,6 +29,7 @@ function onImageShared(elForm, ev) {
 }
 function onImageSaved() {
     cleanHighlightedLine();
+    cleanHighlightedEmoji();
     setTimeout(() => {
         const data = gCanvas.toDataURL('image/png', 1);
         let link = document.createElement('a');
@@ -40,6 +41,7 @@ function onImageSaved() {
 }
 function onCanvasSave() {
     cleanHighlightedLine();
+    cleanHighlightedEmoji();
     setTimeout(() => {
         let memeData = gCanvas.toDataURL();
         gMemes.selectedLineIdx = 0;
@@ -78,10 +80,8 @@ function onTxtEdit(elem) {
     if (setTxtOpts(elem)) drawImg();
 }
 function drawImg(elImg = document.querySelector(`[data-id="${gMeme.selectedImgId}"]`)) {
-    gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
     var img = new Image();
     img.src = elImg.src;
-    _resizeCanvas(elImg);
 
     let lines = getLines();
     let emojis = getEmojis();
@@ -97,8 +97,19 @@ function drawImg(elImg = document.querySelector(`[data-id="${gMeme.selectedImgId
 }
 
 function _drawEmoji(emoji) {
+    let currEmoji = getCurrEmoji();
+    if (currEmoji === emoji) _highlightEmoji(currEmoji.offsetX, currEmoji.offsetY);
+    gCtx.beginPath();
     gCtx.font = `${emoji.size}px Impact`;
+    gCtx.textAlign = 'center';
     gCtx.fillText(emoji.content, emoji.offsetX, emoji.offsetY);
+    gCtx.closePath();
+}
+function _highlightEmoji(x, y) {
+    gCtx.beginPath();
+    gCtx.arc(x,(y + (getCurrEmoji().size / 2)), getCurrEmoji().size, 0, 2 * Math.PI);
+    gCtx.strokeStyle = 'red';
+    gCtx.stroke();
 }
 
 function _drawText(line) {
@@ -107,6 +118,7 @@ function _drawText(line) {
         _drawRect(10, currLine.offsetY);
     }
 
+    gCtx.beginPath();
     gCtx.strokeStyle = line.stroke;
     gCtx.fillStyle = line.color;
     gCtx.font = `${line.size}px ${line.font}`;
@@ -114,6 +126,7 @@ function _drawText(line) {
     gCtx.textBaseline = 'top';
     gCtx.fillText(line.txt.toUpperCase(), line.offsetX, line.offsetY);
     gCtx.strokeText(line.txt.toUpperCase(), line.offsetX, line.offsetY);
+    gCtx.closePath();
 }
 
 function initCanvas() {
@@ -145,15 +158,16 @@ function setFormValues(line) {
         elTxtInp.placeholder = (getCurrLang() === 'en') ? 'Your text here...' : 'כתוב כאן...';
         elFontSelect.value = 'Impact, sans serif';
         elStrokeInp.value = '#000000';
-        elColorInp.value = '#000000';
+        elColorInp.value = '#ffffff';
     }
 }
 function handleKeyEvent() {
     window.addEventListener('keyup', (ev) => {
-        if (!document.querySelector('.modal-container').classList.contains('open')) return;
+        let elFocusedInput = document.querySelector('.controls-panel .txt:focus');
+        if (!document.querySelector('.modal-container').classList.contains('open') || elFocusedInput) return;
         let line = getCurrLine();
         if (!line) return;
-        
+
         if (ev.key === 'Backspace') line.txt = line.txt.substring(0, line.txt.length - 1);
         else if (ev.key === 'Enter') unToggleLine();
         else if (ev.key.length === 1) line.txt += ev.key;
@@ -163,18 +177,19 @@ function handleKeyEvent() {
     });
 }
 function handleDragEvents() {
-    gCanvas.addEventListener('touchstart', (ev) => {
-        let offsetX = ev.targetTouches[0].pageX;
-        let offsetY = ev.targetTouches[0].pageY;
-        onLineClicked(offsetX, offsetY);
-        onEmojiClicked(offsetX, offsetY);
+    gCanvas.addEventListener('touchstart', () => {
+        gCanvas.addEventListener('touchmove', (ev) => {
+            let offsetY = ev.targetTouches[0].pageY - 160;
+            let offsetX = ev.targetTouches[0].pageX;
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            onDragLine(offsetY);
+            onDragEmoji(offsetY, offsetX);
+        });
     });
-    gCanvas.addEventListener('touchmove', (ev) => {
-        ev.preventDefault();
-        let offsetY = ev.targetTouches[0].pageY;
-        let offsetX = ev.targetTouches[0].pageX;
-        onDragLine(offsetY);
-        onDragEmoji(offsetY, offsetX);
+    gCanvas.addEventListener('touchend', () => {
+        unToggleLine();
+        unToggleEmoji();
     });
 
     gCanvas.addEventListener('mousedown', (ev) => {
@@ -228,9 +243,15 @@ function cleanHighlightedLine() {
     unToggleLine();
     drawImg();
 }
+function cleanHighlightedEmoji() {
+    unToggleEmoji();
+    drawImg();
+}
 function _resizeCanvas(elImg) {
+    let aspectRatio = elImg.naturalWidth / elImg.naturalHeight;
+
     var elContainer = document.querySelector('.modal-container');
 
     gCanvas.width = (elImg.naturalWidth > elContainer.offsetWidth) ? (elContainer.offsetWidth - 20) : elImg.naturalWidth;
-    gCanvas.height = elImg.naturalHeight;
+    gCanvas.height = (elImg.naturalWidth > elContainer.offsetWidth) ? elImg.offsetWidth / aspectRatio: elImg.naturalHeight;
 }
