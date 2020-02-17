@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MemeGen</title>
     <link rel="stylesheet" href="css/memes.css">
 </head>
+
 <body onload="OnInit()">
     <header class="header flex space-between align-center">
         <a href="/"><img src="images/LOGO.png" alt="logo" class="logo"></a>
@@ -18,14 +20,31 @@
         <ul class="nav flex space-between align-center">
             <li><a href="index.html" data-page="index" data-trans="nav1" class="nav-link">Gallery</a></li>
             <li><a href="memes.html" data-page="memes" data-trans="nav2" class="nav-link">Memes</a></li>
-            <li><a href="#about" data-page="about" data-trans="nav3" class="nav-link">About</a></li>
+            <li><a href="#footer" data-page="about" data-trans="nav3" class="nav-link">About</a></li>
         </ul>
         <span class="mobile-menu" onclick="toggleMenu()">|</span>
     </header>
 
-    <main class="main-container">
+    <main class="main-container"></main>
 
-    </main>
+    <footer class="footer">
+        <a name="footer"></a>
+        <div class="card">
+            <img src="images/me.jpg">
+            <h3>Daniel Dresner</h3>
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Quidem, beatae illum! Perspiciatis, distinctio ipsam? 
+                Recusandae, non voluptas praesentium sint velit adipisci repellat molestias exercitationem, similique fuga corrupti perferendis laboriosam sed.
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. 
+                Voluptates quam magni ea illum a quidem modi iusto alias. Consequatur illum voluptates quaerat harum architecto tenetur culpa! Sapiente quae ad pariatur!
+            </p>
+        </div>
+    </footer>
+
+    <div class="cover" onclick="closeImageDisplay()">
+        <div class="media-box"></div>
+    </div>
 
     <script src="js/utils.js"></script>
     <script src="js/services/i18n-service.js"></script>
@@ -33,4 +52,5 @@
     <script src="js/controlers/canvas-controler.js"></script>
     <script src="js/controlers/memes-controler.js"></script>
 </body>
+
 </html>

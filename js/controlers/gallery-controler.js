@@ -55,7 +55,8 @@ function onFilterChange(elKey, filterBy) {
 }
 function closeModal() {
     document.querySelector('.modal-container').classList.remove('open');
-    document.querySelector('.gallery').classList.remove('hide');;
+    document.querySelector('.gallery').classList.remove('hide');
+    document.querySelector('.footer').classList.remove('hide');
 }
 function openModal(elImg) {
     setCurrMeme(elImg);
@@ -65,6 +66,7 @@ function openModal(elImg) {
     createNewLine(gCanvas.height, gCanvas.width);
     document.querySelector('.modal-container').classList.add('open');
     document.querySelector('.gallery').classList.add('hide');
+    document.querySelector('.footer').classList.add('hide');
 }
 function onKeysAdd(diff) {
     changeKeywords(diff);

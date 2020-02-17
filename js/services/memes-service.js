@@ -74,6 +74,10 @@ function removeLine() {
         gMeme.lines.splice(gMeme.selectedLineIdx, 1);
         gMeme.selectedLineIdx--;
         return true;
+    } else if (gMeme.selectedEmojiIdx >= 0 && gMeme.emojis.length) {
+        gMeme.emojis.splice(gMeme.selectedEmojiIdx, 1);
+        gMeme.selectedEmojiIdx--;
+        return true;
     }
     return false;
 }

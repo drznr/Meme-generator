@@ -16,6 +16,7 @@ html {
     font-family: poppins, sans-serif;
     font-size: 1.125rem;
     color: #ffffff;
+    scroll-behavior: smooth;
 }
 body {
     margin: 0;
@@ -245,6 +246,13 @@ body.rtl .main-container .search {
 }
 .gallery img {
     cursor: pointer;
+    transition: all .4s linear;
+    outline: 8px solid transparent;
+}
+.gallery img:hover {
+    transform: scale(1.1) rotateZ(5deg);
+    outline-color: #0c98b9;
+    outline-offset: 10px;
 }
 .modal-container {
     position: absolute;
@@ -348,6 +356,33 @@ body.rtl .main-container .search {
     left: 5px;
     display: inline-block;
     cursor: pointer;	
+}
+.footer {
+    padding: 4rem 0;
+}
+.footer .card {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0 auto;  
+    background-image: linear-gradient(105deg, whitesmoke 0%, whitesmoke 30%, #0c98b9 30%, #33be6d 100%);
+    box-shadow: 0px 5px 5px 0 rgba(0, 0, 0, .8);
+    color: #22252c;
+    align-items: center;
+    padding: 2rem 2rem 4rem 2rem;
+}
+.footer img {
+    border-radius: 50%;
+    width: 12rem;
+    float: left;
+    shape-outside: circle();
+    margin-inline-end: 2rem;
+}
+.footer .card p {
+    margin: 0;
+}
+.footer .card img {
+    margin-block-end: 2rem;
 }
 
 /* Helpers */
@@ -454,6 +489,9 @@ body.rtl .lang {
     text-decoration: underline;
     cursor: pointer;
 }
+.hide {
+    display: none;
+}
 
 /* Media Queries */
 @media only screen and (min-width: 980px) {
@@ -509,5 +547,25 @@ body.rtl .lang {
     .btn-file {
         padding: .75rem .625rem;
         font-size: inherit;
+    }
+    .footer .card {
+        display: block;
+    }
+    .footer .card img {
+        margin-block-end: 0;
+        filter: blur(5px) grayscale(1);
+        transition: filter .4s;
+    }
+    .footer .card:hover img {
+        filter: blur(0) grayscale(0);
+    }
+    .footer .card h3 {
+        display: inline-block;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .4s;
+    }
+    .footer .card:hover h3 {
+        transform: scaleX(1);
     }
 }

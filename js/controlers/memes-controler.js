@@ -5,7 +5,7 @@ function OnInit() {
     var strHTML = '';
     if (memes) {
         memes.forEach(meme => {
-            strHTML += `<img src="${meme}" class="meme" />`;
+            strHTML += `<img src="${meme}" class="meme" onclick="onImageDisplay(this)" />`;
         });
     }
     var elContainer = document.querySelector('.main-container');
@@ -31,4 +31,15 @@ function onSetLang(lang) {
     else document.body.classList.remove('rtl');
 
    doTrans();
+}
+function onImageDisplay(elImg) {
+    document.querySelector('.cover').classList.add('active');
+
+    let newImg = new Image();
+    newImg.src = elImg.src;
+    document.querySelector('.media-box').innerHTML = '';
+    document.querySelector('.media-box').appendChild(newImg);
+}
+function closeImageDisplay() {
+    document.querySelector('.cover').classList.remove('active');
 }
